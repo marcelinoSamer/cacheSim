@@ -14,16 +14,16 @@ int main()
 {
 
     cacheConfig cfg (8, 1);
-
     cache cache(cfg);
+    addr addr();
 
     unsigned int hit = 0;
     cacheResType r;
-    unsigned int addr;
+    
     cout << "Direct Mapped Cache Simulator\n";
     for (int inst = 0; inst < NO_OF_Iterations; inst++)
     {
-        addr = cache.memGen2();
+        addr.address = cache.memGen2();
         r = cache.cacheSimDM(addr, cfg);
         if (r == HIT)
             hit++;

@@ -5,9 +5,19 @@
 using namespace std;
 
 
-cache::cache (cacheConfig cacheConfig){
+cache::cache(cacheConfig cfg) {
+    cacheLines.resize(cfg.numSets);
 
+    for (auto &set : cacheLines) {
+        set.resize(cfg.numWays);
+        for (auto &block : set) {
+            block.valid = false;
+            block.tag = 0;
+            block.data = 0;
+        }
+    }
 }
+
 
 
 /* The following implements a random number generator */
@@ -52,16 +62,13 @@ unsigned int cache::memGen6()
 
 
 // Direct Mapped Cache Simulator
-cacheResType cache::cacheSimDM(unsigned int addr, const cacheConfig &cfg)
+cacheResType cache::cacheSimDM(addr addr, const cacheConfig &cfg)
 {
     // This function accepts the memory address for the memory transaction and
     // returns whether it caused a cache miss or a cache hit
     // The current implementation assumes there is no cache; so, every transaction is a miss 
-    unsigned int index = (addr / cfg.lineSize) % cfg.numSets;
-    unsigned int tag = addr / cfg.lineSize;
-    unsigned int offset = addr % cfg.numWays;
-
-    if (cacheLines[index][offset].tag == tag)
+    
+    if (cacheLines[addr.index][addr.offset].tag == tag)
         return HIT;
 
     cacheLines[index][offset].tag = tag;
