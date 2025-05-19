@@ -62,13 +62,13 @@ unsigned int cache::memGen6()
 
 
 // Direct Mapped Cache Simulator
-cacheResType cache::cacheSimDM(addr addr, const cacheConfig &cfg)
+cacheResType cache::cacheSimDM(addr addr)
 {
     // This function accepts the memory address for the memory transaction and
     // returns whether it caused a cache miss or a cache hit
     // The current implementation assumes there is no cache; so, every transaction is a miss 
     
-    if (cacheLines[addr.index][addr.offset].tag == addr.tag)
+    if (cacheLines[addr.index][addr.offset].tag == addr.tag && cacheLines[addr.index][addr.offset].valid == true)
         return HIT;
 
     cacheLines[addr.index][addr.offset].tag = addr.tag;
@@ -80,6 +80,8 @@ cacheResType cache::cacheSimFA(addr address)
 {
     // This function accepts the memory address for the read and
     // returns whether it caused a cache miss or a cache hit
-    // The current implementation assumes there is no cache; so, every transaction is a miss 
+    // The current implementation assumes there is no cache; so, every transaction is a miss
+
+
     return MISS;
 }

@@ -81,8 +81,8 @@ public:
     unsigned int memGen5();
     unsigned int memGen6();
 
-    cacheResType cacheSimDM(addr address, const cacheConfig &cfg);
-    cacheResType cacheSimFA(addr address);
+    cacheResType cacheSimDM(addr addr);
+    cacheResType cacheSimFA(addr addr);
 };
 
 #endif // CACHE_H
