@@ -5,7 +5,7 @@
 using namespace std;
 
 
-cache::cache(cacheConfig cfg) {
+cache::cache(const cacheConfig &cfg) {
     cacheLines.resize(cfg.numSets);
 
     for (auto &set : cacheLines) {
@@ -68,14 +68,15 @@ cacheResType cache::cacheSimDM(addr addr, const cacheConfig &cfg)
     // returns whether it caused a cache miss or a cache hit
     // The current implementation assumes there is no cache; so, every transaction is a miss 
     
-    if (cacheLines[addr.index][addr.offset].tag == tag)
+    if (cacheLines[addr.index][addr.offset].tag == addr.tag)
         return HIT;
 
-    cacheLines[index][offset].tag = tag;
+    cacheLines[addr.index][addr.offset].tag = addr.tag;
+    cacheLines[addr.index][addr.offset].valid = true;
     return MISS;
 }
 // Fully Associative Cache Simulator
-cacheResType cache::cacheSimFA(unsigned int addr)
+cacheResType cache::cacheSimFA(addr address)
 {
     // This function accepts the memory address for the read and
     // returns whether it caused a cache miss or a cache hit
