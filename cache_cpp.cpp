@@ -68,11 +68,11 @@ cacheResType cache::cacheSimDM(addr addr)
     // returns whether it caused a cache miss or a cache hit
     // The current implementation assumes there is no cache; so, every transaction is a miss 
     
-    if (cacheLines[addr.index][addr.offset].tag == addr.tag && cacheLines[addr.index][addr.offset].valid == true)
+    if (cacheLines[addr.index][0].tag == addr.tag && cacheLines[addr.index][0].valid == true)
         return HIT;
 
-    cacheLines[addr.index][addr.offset].tag = addr.tag;
-    cacheLines[addr.index][addr.offset].valid = true;
+    cacheLines[addr.index][0].tag = addr.tag;
+    cacheLines[addr.index][0].valid = true;
     return MISS;
 }
 // Fully Associative Cache Simulator

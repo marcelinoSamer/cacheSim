@@ -6,7 +6,7 @@
 using namespace std;
 
 const char *msg[2] = {"Miss", "Hit"};
-#define NO_OF_Iterations 1000 // Change to 1,000,000
+#define NO_OF_Iterations 10 // Change to 1,000,000
 
 int main() {
     cacheConfig cfg(16, 1);
@@ -28,12 +28,11 @@ int main() {
             address1.address = cache.memGen4();
         else if (inst < 5 * NO_OF_Iterations / 6)
             address1.address = cache.memGen5();
-        else if (inst < NO_OF_Iterations )
+        else if (inst < NO_OF_Iterations)
             address1.address = cache.memGen6();
 
         address1.extractFields(cfg);
 
-        //cout << bitset<16>(address1.address) << "\n";
 
         cout << dec << inst << "    " << "0b" << setfill('0') << setw(8) << bitset<16>(address1.address) << " (" << msg[r]
                 << ")\n";
