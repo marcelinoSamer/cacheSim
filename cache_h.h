@@ -83,6 +83,7 @@ public:
 
     cacheResType cacheSimDM(addr addr);
     cacheResType cacheSimFA(::addr address, cacheConfig cfg);
+    cacheResType cacheSimNway (addr address, const cacheConfig &cfg);
 };
 
 #endif // CACHE_H

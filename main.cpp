@@ -6,61 +6,107 @@
 using namespace std;
 
 const char *msg[2] = {"Miss", "Hit"};
-#define NO_OF_Iterations 10 // Change to 1,000,000
+#define NO_OF_Iterations 1000000 // Change to 1,000,000
 
 int main() {
-    cacheConfig cfg(16, 1);
-    cache cache0(cfg);
-    addr address1;
 
-    unsigned long hit = 0;
-    cacheResType r;
+    //First expirement: Fix the number of sets to 4 and vary the line size. Plot the hit ratio against the line size
+    cout << "First expirement: Fix the number of sets to 4 and vary the line size. Plot the hit ratio against the line size" << endl;
+    for (int lsize = 16; lsize <= 128; lsize*=2) {
+        cacheConfig cfg(lsize, 4);
+        cache cache0(cfg);
+        addr address1;
 
-    cout << "Direct Mapped Cache Simulator\n";
-    for (int inst = 0; inst < NO_OF_Iterations; inst++) {
-        if (inst < NO_OF_Iterations / 6)
-            address1.address = cache0.memGen1();
-        else if (inst < 2 * NO_OF_Iterations / 6)
-            address1.address = cache0.memGen2();
-        else if (inst < 3 * NO_OF_Iterations / 6)
-            address1.address = cache0.memGen3();
-        else if (inst < 4 * NO_OF_Iterations / 6)
-            address1.address = cache0.memGen4();
-        else if (inst < 5 * NO_OF_Iterations / 6)
-            address1.address = cache0.memGen5();
-        else if (inst < NO_OF_Iterations)
-            address1.address = cache0.memGen6();
-
-        address1.extractFields(cfg);
+        unsigned long hit = 0;
+        cacheResType r;
 
 
-        cout << dec << inst << "    " << "0b" << setfill('0') << setw(8) << bitset<16>(address1.address) << " (" << msg[r]
-                << ")\n";
+
+        cout << "Direct Mapped Cache Simulator\n";
+        for (int inst = 0; inst < NO_OF_Iterations; inst++) {
+            if (inst < NO_OF_Iterations / 6)
+                address1.address = cache0.memGen1();
+            else if (inst < 2 * NO_OF_Iterations / 6)
+                address1.address = cache0.memGen2();
+            else if (inst < 3 * NO_OF_Iterations / 6)
+                address1.address = cache0.memGen3();
+            else if (inst < 4 * NO_OF_Iterations / 6)
+                address1.address = cache0.memGen4();
+            else if (inst < 5 * NO_OF_Iterations / 6)
+                address1.address = cache0.memGen5();
+            else if (inst < NO_OF_Iterations)
+                address1.address = cache0.memGen6();
+
+            address1.extractFields(cfg);
+
+            //if (inst %10000000 == 0) cout << inst << endl;
+            /*cout << dec << inst << "    " << "0b" << setfill('0') << setw(8) << bitset<16>(address1.address) << " (" << msg[r]
+                    << ")\n";*/
 
 
-        r = cache0.cacheSimDM(address1);
-        if (r == HIT)
-            hit++;
+            r = cache0.cacheSimDM(address1);
+            if (r == HIT)
+                hit++;
 
+        }
+
+        cout << "Hit ratio DM = " << (100 * (static_cast<double>(hit) / NO_OF_Iterations)) << "%" << endl << flush;
+
+        cout << "--------------------------------" << endl;
     }
 
-    cout << "Hit ratio DM = " << (100 * (static_cast<double>(hit) / NO_OF_Iterations)) << "%" << endl << flush;
 
-    cout << "--------------------------------" << endl;
+    cout << endl << "----------------------------" << endl;
 
-    hit = 0;
-    cache cache1(cfg);
-    for (int inst = 0; inst < NO_OF_Iterations; inst++) {
-        address1.address = cache1.memGen2();
-        address1.extractFields(cfg);
-        r = cache1.cacheSimFA(address1, cfg);
-        if (r == HIT)
-            hit++;
-        cout << dec << inst << "    " << "0b" << setfill('0') << setw(8) << bitset<16>(address1.address) << " (" << msg[r]
-                << ")\n";
+    //Fix the line size to 64 bytes and vary the number of sets (ways). Plot the hit ratio against the number of ways.
+    cout << "Fix the line size to 64 bytes and vary the number of sets (ways). Plot the hit ratio against the number of ways." << endl;
+    for (int n = 1; n <= 16; n*=2) {
+        cacheConfig cfg(64, n);
+        cache cache1(cfg);
+        addr address1;
+
+        unsigned long hit = 0;
+        cacheResType r;
+
+
+
+        cout << "N - Way Cache Simulator\n";
+        for (int inst = 0; inst < NO_OF_Iterations; inst++) {
+            if (inst < NO_OF_Iterations / 6)
+                address1.address = cache1.memGen1();
+            else if (inst < 2 * NO_OF_Iterations / 6)
+                address1.address = cache1.memGen2();
+            else if (inst < 3 * NO_OF_Iterations / 6)
+                address1.address = cache1.memGen3();
+            else if (inst < 4 * NO_OF_Iterations / 6)
+                address1.address = cache1.memGen4();
+            else if (inst < 5 * NO_OF_Iterations / 6)
+                address1.address = cache1.memGen5();
+            else if (inst < NO_OF_Iterations)
+                address1.address = cache1.memGen6();
+
+            address1.extractFields(cfg);
+
+            //if (inst %10000000 == 0) cout << inst << endl;
+            /*cout << dec << inst << "    " << "0b" << setfill('0') << setw(8) << bitset<16>(address1.address) << " (" << msg[r]
+                    << ")\n";*/
+
+
+            r = cache1.cacheSimNway(address1, cfg);
+            if (r == HIT)
+                hit++;
+
+        }
+
+        cout << "Hit ratio DM = " << (100 * (static_cast<double>(hit) / NO_OF_Iterations)) << "%" << endl << flush;
+
+        cout << "--------------------------------" << endl;
     }
 
-    cout << "Hit ratio FA = " << (100 * (static_cast<double>(hit) / NO_OF_Iterations)) << "%" << endl << flush;
+
+
+
+
 
     return 0;
 }

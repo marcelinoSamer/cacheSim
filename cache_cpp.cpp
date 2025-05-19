@@ -101,3 +101,32 @@ cacheResType cache::cacheSimFA(addr address, cacheConfig cfg) {
     return MISS;
 }
 
+cacheResType cache::cacheSimNway(addr address, const cacheConfig &cfg)
+{
+    int setIndex = address.index;
+
+    // Search for HIT in the set
+    for (int way = 0; way < cfg.numWays; way++) {
+        if (cacheLines[setIndex][way].valid &&
+            cacheLines[setIndex][way].tag == address.tag) {
+            return HIT;
+            }
+    }
+
+    // MISS: Try to find an empty slot
+    for (int way = 0; way < cfg.numWays; ++way) {
+        if (!cacheLines[setIndex][way].valid) {
+            cacheLines[setIndex][way].tag = address.tag;
+            cacheLines[setIndex][way].valid = true;
+            return MISS;
+        }
+    }
+
+    // If all are full: apply random replacement
+    int randomWay = rand() % cfg.numWays;
+    cacheLines[setIndex][randomWay].tag = address.tag;
+    cacheLines[setIndex][randomWay].valid = true;
+    return MISS;
+}
+
+
