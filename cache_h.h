@@ -82,7 +82,7 @@ public:
     unsigned int memGen6();
 
     cacheResType cacheSimDM(addr addr);
-    cacheResType cacheSimFA(addr addr);
+    cacheResType cacheSimFA(::addr address, cacheConfig cfg);
 };
 
 #endif // CACHE_H

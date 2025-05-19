@@ -76,12 +76,28 @@ cacheResType cache::cacheSimDM(addr addr)
     return MISS;
 }
 // Fully Associative Cache Simulator
-cacheResType cache::cacheSimFA(addr address)
-{
-    // This function accepts the memory address for the read and
-    // returns whether it caused a cache miss or a cache hit
-    // The current implementation assumes there is no cache; so, every transaction is a miss
+cacheResType cache::cacheSimFA(addr address, cacheConfig cfg) {
+    // Search for a hit
+    for (int i = 0; i < cfg.numSets; i++) {
+        if (cacheLines[i][0].valid && cacheLines[i][0].tag == address.tag) {
+            return HIT;
+        }
+    }
 
+    // Search for a free line
+    for (int i = 0; i < cfg.numSets; i++) {
+        if (!cacheLines[i][0].valid) {
+            cacheLines[i][0].tag = address.tag;
+            cacheLines[i][0].valid = true;
+            return MISS;
+        }
+    }
+
+    // No free line: use random replacement
+    int randomIndex = rand() % cfg.numSets;
+    cacheLines[randomIndex][0].tag = address.tag;
+    cacheLines[randomIndex][0].valid = true;
 
     return MISS;
 }
+
