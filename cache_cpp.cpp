@@ -76,10 +76,12 @@ cacheResType cache::cacheSimDM(addr addr)
     return MISS;
 }
 // Fully Associative Cache Simulator
-cacheResType cache::cacheSimFA(addr address, cacheConfig cfg) {
+cacheResType cache::cacheSimFA(addr address, cacheConfig cfg, unsigned int inst) {
     // Search for a hit
     for (int i = 0; i < cfg.numSets; i++) {
         if (cacheLines[i][0].valid && cacheLines[i][0].tag == address.tag) {
+            cacheLines[i][0].hit_count++;
+            cacheLines[i][0].last_used = inst;
             return HIT;
         }
     }
@@ -89,14 +91,60 @@ cacheResType cache::cacheSimFA(addr address, cacheConfig cfg) {
         if (!cacheLines[i][0].valid) {
             cacheLines[i][0].tag = address.tag;
             cacheLines[i][0].valid = true;
+            cacheLines[i][0].hit_count = 0;
+            cacheLines[i][0].last_used = inst;
+            cacheLines[i][0].insertion_time = inst;
             return MISS;
         }
     }
 
     // No free line: use random replacement
-    int randomIndex = rand() % cfg.numSets;
-    cacheLines[randomIndex][0].tag = address.tag;
-    cacheLines[randomIndex][0].valid = true;
+    if(cfg.rpl == Random) {
+        int randomIndex = rand() % cfg.numSets;
+        cacheLines[randomIndex][0].tag = address.tag;
+        cacheLines[randomIndex][0].valid = true;
+        cacheLines[randomIndex][0].hit_count = 0;
+        cacheLines[randomIndex][0].last_used = inst;
+    }
+    else if (cfg.rpl == FIFO) {
+        int oldestIndex = 0;
+        for (int i = 1; i < cfg.numSets; i++) {
+            if (cacheLines[i][0].insertion_time < cacheLines[oldestIndex][0].insertion_time) {
+                oldestIndex = i;
+            }
+        }
+        cacheLines[oldestIndex][0].tag = address.tag;
+        cacheLines[oldestIndex][0].data = inst;
+        cacheLines[oldestIndex][0].hit_count = 0;
+        cacheLines[oldestIndex][0].last_used = inst;
+    }
+    else if (cfg.rpl == LRU) {
+        int lruIndex = 0;
+        for (int i = 1; i < cfg.numSets; i++) {
+            if (cacheLines[i][0].last_used < cacheLines[lruIndex][0].last_used) {
+                lruIndex = i;
+            }
+        }
+        cacheLines[lruIndex][0].tag = address.tag;
+        cacheLines[lruIndex][0].data = inst;
+        cacheLines[lruIndex][0].hit_count = 0;
+        cacheLines[lruIndex][0].last_used = inst;
+    }
+
+    else if (cfg.rpl == LFU) {
+            // Find the line with the smallest hit_count
+            int lfuIndex = 0;
+            for (int i = 1; i < cfg.numSets; i++) {
+                if (cacheLines[i][0].hit_count < cacheLines[lfuIndex][0].hit_count) {
+                    lfuIndex = i;
+                }
+            }
+            // Replace this block
+            cacheLines[lfuIndex][0].tag = address.tag;
+            cacheLines[lfuIndex][0].hit_count = 0;
+            cacheLines[lfuIndex][0].last_used = inst;
+        }
+
 
     return MISS;
 }
