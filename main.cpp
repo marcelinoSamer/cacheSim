@@ -139,7 +139,7 @@ int main() {
 
         }
 
-        cout << "Hit ratio" << msg2[rpl] <<":"<< (100 * (static_cast<double>(hit) / NO_OF_Iterations)) << "%" << endl << flush;
+        cout << "Hit ratio " << msg2[rpl-1] <<":"<< (100 * (static_cast<double>(hit) / NO_OF_Iterations)) << "%" << endl << flush;
 
         cout << "--------------------------------" << endl;
     }
